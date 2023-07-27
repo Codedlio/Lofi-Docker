@@ -1,0 +1,26 @@
+# Primera etapa: instalar dependencias y construir la aplicación
+FROM node:14.21 AS builder
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+# Segunda etapa: crear una imagen más pequeña para producción
+FROM node:14.21 AS production
+
+WORKDIR /usr/src/app
+
+ENV NODE_ENV=production
+
+COPY --from=builder /usr/src/app/package*.json ./
+COPY --from=builder /usr/src/app/.next ./.next
+COPY --from=builder /usr/src/app/public ./public
+
+RUN npm install --production
+
+EXPOSE 3000
+
+CMD ["npm", "start"]

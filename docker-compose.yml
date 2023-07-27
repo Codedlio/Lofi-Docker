@@ -1,0 +1,25 @@
+version: "2"
+services:
+  apollo-server:
+    networks:
+      - apollo
+    image: codedlio/api:latest
+    restart: always
+    ports:
+      - "4000:4000"
+
+  nxtjs-frontend:
+  build:
+    context: .
+    dockerfile: Dockerfile
+  restart: always
+  ports:
+    - "3000:3000"
+  depends_on:
+    - apollo-server
+  networks:
+    - apollo
+
+networks:
+  apollo:
+    driver: bridge
